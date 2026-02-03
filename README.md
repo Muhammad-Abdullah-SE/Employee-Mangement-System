@@ -39,4 +39,4 @@ Let’s be honest: tracking employee data in messy spreadsheets is a headache. I
 ### Installation
 1. **Clone the Repo:**
    ```bash
-   git clone [https://github.com/YourUsername/Employee-Management-System.git](https://github.com/YourUsername/Employee-Management-System.git)
+   git clone [https://github.com/Muhammad-Abdullah-SE/Employee-Mangement-System.git)
