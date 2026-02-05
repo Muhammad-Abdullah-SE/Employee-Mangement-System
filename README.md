@@ -14,7 +14,7 @@ Let’s be honest: tracking employee data in messy spreadsheets is a headache. I
 
 ##  The Tech Stack
 * **Language:** Java (Swing & AWT for the GUI)
-* **Database:** MySQL Database
+* **Database:** MySQL 
 * **API/Libraries:** * **JDBC:** For database connectivity.
     * **rs2xml (DbUtils):** To convert SQL ResultSets into readable JTables.
     * **JCalendar:** For a user-friendly date-of-birth picker.
