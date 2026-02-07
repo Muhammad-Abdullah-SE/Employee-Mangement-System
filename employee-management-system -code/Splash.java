@@ -4,68 +4,117 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+
 public class Splash extends JFrame implements ActionListener {
 
-    JLabel heading;
+    // Constants
+    private static final int BLINK_INTERVAL_MS = 500;
+    private static final int BUTTON_WIDTH = 300;
+    private static final int BUTTON_HEIGHT = 60;
+    private static final int BUTTON_BOTTOM_MARGIN = 100;
+    private static final int IMAGE_BOTTOM_MARGIN = 250;
 
-    Splash() {
+    // UI Components
+    private JLabel heading;
+    private JButton continueButton;
+
+    public Splash() {
+        initializeFrame();
+        initializeComponents();
+        startHeadingAnimation();
+    }
+
+    private void initializeFrame() {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setUndecorated(true);
         getContentPane().setBackground(Color.WHITE);
         setLayout(null);
+        setVisible(true);
+    }
 
-        int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
-        int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
+    private void initializeComponents() {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenWidth = screenSize.width;
+        int screenHeight = screenSize.height;
 
-        // 1. Heading - Centered at the top
+        createHeading(screenWidth);
+        createContinueButton(screenWidth, screenHeight);
+        createBackgroundImage(screenWidth, screenHeight);
+    }
+
+
+    private void createHeading(int screenWidth) {
         heading = new JLabel("EMPLOYEE MANAGEMENT SYSTEM");
         heading.setBounds(0, 50, screenWidth, 80);
         heading.setFont(new Font("serif", Font.BOLD, 60));
         heading.setForeground(new Color(30, 144, 255));
         heading.setHorizontalAlignment(SwingConstants.CENTER);
         add(heading);
+    }
 
-        // 2. Click Here To Continue Button - Moved "very little more down"
-        JButton clickhere = new JButton("CLICK HERE TO CONTINUE");
-        // Moved from -120 to -100 to bring it lower on the screen
-        clickhere.setBounds((screenWidth / 2) - 150, screenHeight - 100, 300, 60);
-        clickhere.setBackground(Color.BLACK);
-        clickhere.setForeground(Color.WHITE);
-        clickhere.setFont(new Font("Arial", Font.BOLD, 16));
-        clickhere.setFocusable(false);
-        clickhere.addActionListener(this);
-        add(clickhere);
 
-        // 3. Background Image - Scaled to stop right before the button
-        ImageIcon i1 = new ImageIcon(ClassLoader.getSystemResource("icon/front.jpg"));
-        // Image height adjusted to ensure the button has its own clear space
-        Image i2 = i1.getImage().getScaledInstance(screenWidth, screenHeight - 250, Image.SCALE_SMOOTH);
-        ImageIcon i3 = new ImageIcon(i2);
-        JLabel image = new JLabel(i3);
-        image.setBounds(0, 130, screenWidth, screenHeight - 250);
-        add(image);
+    private void createContinueButton(int screenWidth, int screenHeight) {
+        continueButton = new JButton("CLICK HERE TO CONTINUE");
 
-        setVisible(true);
+        int buttonX = (screenWidth / 2) - (BUTTON_WIDTH / 2);
+        int buttonY = screenHeight - BUTTON_BOTTOM_MARGIN;
 
-        // Blinking Thread logic
+        continueButton.setBounds(buttonX, buttonY, BUTTON_WIDTH, BUTTON_HEIGHT);
+        continueButton.setBackground(Color.BLACK);
+        continueButton.setForeground(Color.WHITE);
+        continueButton.setFont(new Font("Arial", Font.BOLD, 16));
+        continueButton.setFocusable(false);
+        continueButton.addActionListener(this);
+        add(continueButton);
+    }
+
+
+    private void createBackgroundImage(int screenWidth, int screenHeight) {
+        try {
+            ImageIcon originalIcon = new ImageIcon(ClassLoader.getSystemResource("front.jpg"));
+            int imageHeight = screenHeight - IMAGE_BOTTOM_MARGIN;
+
+            Image scaledImage = originalIcon.getImage().getScaledInstance(
+                    screenWidth, imageHeight, Image.SCALE_SMOOTH
+            );
+
+            ImageIcon scaledIcon = new ImageIcon(scaledImage);
+            JLabel imageLabel = new JLabel(scaledIcon);
+            imageLabel.setBounds(0, 130, screenWidth, imageHeight);
+            add(imageLabel);
+        } catch (Exception e) {
+            System.err.println("Warning: Could not load splash image 'front.jpg'");
+        }
+    }
+
+    /**
+     * Starts the blinking animation for the heading
+     */
+    private void startHeadingAnimation() {
         new Thread(() -> {
             try {
-                while(true) {
+                while (true) {
                     heading.setVisible(false);
-                    Thread.sleep(500);
+                    Thread.sleep(BLINK_INTERVAL_MS);
                     heading.setVisible(true);
-                    Thread.sleep(500);
+                    Thread.sleep(BLINK_INTERVAL_MS);
                 }
-            } catch (Exception e) {}
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }).start();
     }
 
+
+    @Override
     public void actionPerformed(ActionEvent ae) {
-        setVisible(false);
-        new Login();
+        if (ae.getSource() == continueButton) {
+            setVisible(false);
+            new Login();
+        }
     }
 
     public static void main(String[] args) {
-        new Splash();
+        SwingUtilities.invokeLater(() -> new Splash());
     }
 }
